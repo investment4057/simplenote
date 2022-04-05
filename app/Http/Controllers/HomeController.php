@@ -82,7 +82,9 @@ class HomeController extends Controller
         // dd($memo);
 
         $memos = Memo::where('user_id', $user['id'])->where('status', 1)->orderBy('updated_at', 'DESC')->get();
+
         //取得したメモをViewに渡す
+        $tags = Tag::where('user_id', $user['id'])->get();
         return view('edit', compact('memo', 'user', 'memos', 'tags'));
     }
 
@@ -92,5 +94,17 @@ class HomeController extends Controller
         // dd($inputs);
         Memo::where('id', $id)->update(['content' => $inputs['content'], 'tag_id' => $inputs['tag_id']]);
         return redirect()->route('home');
+    }
+
+    public function delete(Request $request, $id)
+    {
+        $inputs = $request->all();
+        // dd($inputs);
+        // 論理削除なので、status=2
+        Memo::where('id', $id)->update([ 'status' => 2 ]);
+        // ↓は物理削除
+        // Memo::where('id', $id)->delete();
+
+        return redirect()->route('home')->with('success', 'メモの削除が完了しました！');
     }
 }
