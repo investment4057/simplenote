@@ -53,8 +53,14 @@ class HomeController extends Controller
         // POSTされたデータをDB（memosテーブル）に挿入
         // MEMOモデルにDBへ保存する命令を出す
 
-        //先にタグをインサート
-        $tag_id = Tag::insertGetId(['name' => $data['tag'], 'user_id' => $data['user_id']]);
+        // 同じタグがあるか確認
+        $exist_tag = Tag::where('name', $data['tag'])->where('user_id', $data['user_id'])->first();
+        if( empty($exist_tag['id']) ){
+            //先にタグをインサート
+            $tag_id = Tag::insertGetId(['name' => $data['tag'], 'user_id' => $data['user_id']]);
+        }else{
+            $tag_id = $exist_tag['id'];
+        }
         //タグのIDが判明する
         // タグIDをmemosテーブルに入れてあげる
         $memo_id = Memo::insertGetId([
@@ -76,9 +82,7 @@ class HomeController extends Controller
         // dd($memo);
 
         $memos = Memo::where('user_id', $user['id'])->where('status', 1)->orderBy('updated_at', 'DESC')->get();
-
         //取得したメモをViewに渡す
-        $tags = Tag::where('user_id', $user['id'])->get();
         return view('edit', compact('memo', 'user', 'memos', 'tags'));
     }
 
