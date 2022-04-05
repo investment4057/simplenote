@@ -32,7 +32,7 @@ class HomeController extends Controller
         // ASC=昇順 DESC=降順（新しい順）
         $memos = Memo::where('user_id', $user['id'])->where('status', 1)->orderBy('updated_at', 'DESC')->get();
         // dd($memos);
-        return view('home', compact('user', 'memos'));
+        return view('create', compact('user', 'memos'));
     }
 
     public function create()
