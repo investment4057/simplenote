@@ -78,14 +78,15 @@ class HomeController extends Controller
         $memos = Memo::where('user_id', $user['id'])->where('status', 1)->orderBy('updated_at', 'DESC')->get();
 
         //取得したメモをViewに渡す
-        return view('edit', compact('memo', 'user', 'memos'));
+        $tags = Tag::where('user_id', $user['id'])->get();
+        return view('edit', compact('memo', 'user', 'memos', 'tags'));
     }
 
     public function update(Request $request, $id)
     {
         $inputs = $request->all();
         // dd($inputs);
-        Memo::where('id', $id)->update(['content' => $inputs['content']]);
+        Memo::where('id', $id)->update(['content' => $inputs['content'], 'tag_id' => $inputs['tag_id']]);
         return redirect()->route('home');
     }
 }
